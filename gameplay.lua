@@ -4,7 +4,6 @@ local tween = require "lib/tween"
 
 local gameplay = {}
 
-local t1
 local rm,rmg
 local r1,r1g,r1r
 local r2,r2g,r2r
@@ -17,7 +16,9 @@ local nextDrop = 0
 local nextDropTime = 5
 local Drop = require "drop"
 local nextBug = 0.5
-local nextBugTime = 2.5
+local nextBugTime = 5
+local nextBugQ = 1
+local nextBugQC = 5
 local Bug = require "bug"
 local bugs = {}
 local drops = {}
@@ -36,7 +37,9 @@ function gameplay:enter()
   nextDropTime = 5
   drops = {}
   nextBug = 0.5
-  nextBugTime = 2.5
+  nextBugTime = 5
+  nextBugQ = 1
+  nextBugQC = 10
   bugs = {}
   energy = 9
   bTime = 0
@@ -45,7 +48,6 @@ function gameplay:enter()
 end
 
 function gameplay:load()
-  t1 = love.graphics.newImage("gfx/t1.png")
   local g = anim8.newGrid(200,200,t1:getWidth(),t1:getHeight())
   local quads = g('1-5',1,'1-2',2)
   rmg,rm,r1g,r1,r2g,r2,center = unpack(quads)
@@ -64,7 +66,7 @@ end
 function gameplay:mousepressed(x,y,key)
   if key == "l" and bTime <= 0 and playing then
     table.insert(bullets,Bullet(rmr))
-    bTime = 0.5
+    bTime = 0.1
   end
 end
 
@@ -133,8 +135,8 @@ function gameplay:update(dt)
     if nextDrop <= 0 then
       table.insert(drops,Drop())
       nextDrop = nextDrop + nextDropTime
-      nextDropTime = nextDropTime - 0.05
-      if nextDropTime < 0.1 then nextDropTime = 0.1 end
+      nextDropTime = nextDropTime - 0.025
+      if nextDropTime < 1.5 then nextDropTime = 1.5 end
     end
     for i = 1,#bugs do
       if not bugs[i].fading then
@@ -155,10 +157,13 @@ function gameplay:update(dt)
     if #bugs > 0 and bugs[1].todelete then table.remove(bugs,1) end 
     nextBug = nextBug - dt
     if nextBug <= 0 then
-      table.insert(bugs,Bug())
+      for i = 1,nextBugQ do table.insert(bugs,Bug()) end
+      nextBugQC = nextBugQC - 1
+      if nextBugQC == 0 then
+        nextBugQC = 10
+        nextBugQ = nextBugQ + 1
+      end
       nextBug = nextBug + nextBugTime
-      nextBugTime = nextBugTime - 0.025
-      if nextBugTime < 0.1 then nextBugTime = 0.1 end
     end
   end
   r1r = r1r + dt*0.1
@@ -168,34 +173,30 @@ function gameplay:update(dt)
 end
 
 function gameplay:draw()
-  love.graphics.setColor(255,255,255,alpha.v)
-  love.graphics.drawq(t1,center,300,200)
+  batch:setColor(255,255,255,alpha.v)
+  batch:addq(center,300,200)
   if playing then
-    if energy > 2 then love.graphics.setColor(255,255,255,255)
-    else love.graphics.setColor(255,255,255,255*energy/3) end
-    love.graphics.drawq(t1,r2g,400,300,r2r,1,1,100,100)
-    love.graphics.setColor(255,255,255,alpha.v)
-  elseif energy > 0 then love.graphics.drawq(t1,r2g,400,300,r2r,1,1,100,100) end
-  love.graphics.drawq(t1,r2,400,300,r2r,1,1,100,100)
+    if energy > 2 then batch:setColor(255,255,255,255)
+    else batch:setColor(255,255,255,255*energy/3) end
+    batch:addq(r2g,400,300,r2r,1,1,100,100)
+    batch:setColor(255,255,255,alpha.v)
+  elseif energy > 0 then batch:addq(r2g,400,300,r2r,1,1,100,100) end
+  batch:addq(r2,400,300,r2r,1,1,100,100)
   if playing then
-    if energy > 5 then love.graphics.setColor(255,255,255,255)
-    elseif energy < 4 then love.graphics.setColor(255,255,255,0)
-    else love.graphics.setColor(255,255,255,255*(energy-3)/3) end
-    love.graphics.drawq(t1,r1g,400,300,r1r,1,1,100,100)
-    love.graphics.setColor(255,255,255,alpha.v)
-  elseif energy > 0 then love.graphics.drawq(t1,r1g,400,300,r1r,1,1,100,100) end
-  love.graphics.drawq(t1,r1,400,300,r1r,1,1,100,100)
+    if energy > 5 then batch:setColor(255,255,255,255)
+    elseif energy < 4 then batch:setColor(255,255,255,0)
+    else batch:setColor(255,255,255,255*(energy-3)/3) end
+    batch:addq(r1g,400,300,r1r,1,1,100,100)
+    batch:setColor(255,255,255,alpha.v)
+  elseif energy > 0 then batch:addq(r1g,400,300,r1r,1,1,100,100) end
+  batch:addq(r1,400,300,r1r,1,1,100,100)
   if playing then
-    if energy < 7 then love.graphics.setColor(255,255,255,0)
-    else love.graphics.setColor(255,255,255,255*(energy-6)/3) end
-    love.graphics.drawq(t1,rmg,400,300,rmr,1,1,100,100)
-    love.graphics.setColor(255,255,255,alpha.v)
-  elseif energy > 0 then love.graphics.drawq(t1,rmg,400,300,rmr,1,1,100,100) end
-  love.graphics.drawq(t1,rm,400,300,rmr,1,1,100,100)
-  love.graphics.setColor(30,20,0,alpha.v)
-  love.graphics.setFont(fonts)
-  love.graphics.printf(pstring,350,288,100,"center")
-  love.graphics.setColor(255,255,255,255)
+    if energy < 7 then batch:setColor(255,255,255,0)
+    else batch:setColor(255,255,255,255*(energy-6)/3) end
+    batch:addq(rmg,400,300,rmr,1,1,100,100)
+    batch:setColor(255,255,255,alpha.v)
+  elseif energy > 0 then batch:addq(rmg,400,300,rmr,1,1,100,100) end
+  batch:addq(rm,400,300,rmr,1,1,100,100)
   for i = 1,#bugs do
     bugs[i]:draw(alpha.v)
   end
@@ -205,7 +206,14 @@ function gameplay:draw()
   for i = 1,#drops do
     drops[i]:draw(alpha.v)
   end
-  love.graphics.draw(cross,mx,my,0,1,1,30,30)
+  batch:addq(cross,mx,my,0,1,1,30,30)
+  batch:unbind()
+  love.graphics.draw(batch)
+  batch:clear()
+  love.graphics.setColor(30,20,0,alpha.v)
+  love.graphics.setFont(fonts)
+  love.graphics.printf(pstring,350,288,100,"center")
+  love.graphics.setColor(255,255,255,255)
 end
 
 return gameplay;

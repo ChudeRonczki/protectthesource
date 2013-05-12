@@ -4,7 +4,7 @@ anim8 = require "lib/anim8"
 tween = require "lib/tween"
 
 local Bug = Class{}
-local tbug, g, quads, gbug
+local g, quads, gbug
 
 function Bug:init()
   local angle = math.random()*twopi-math.pi
@@ -12,12 +12,11 @@ function Bug:init()
   self.dx,self.dy = vector.rotate(angle,-1,0)
   self.x,self.y = 400 - self.dx*550, 300 - self.dy*550
   self.dx,self.dy = self.dx*25,self.dy*25
-  if not tbug then
-    tbug = love.graphics.newImage("gfx/robal.png")
-    g = anim8.newGrid(50,50,tbug:getWidth(),tbug:getHeight())
-    quads = g(2,2)
+  if not gbug then
+    g = anim8.newGrid(50,50,t1:getWidth(),t1:getHeight())
+    quads = g(10,6)
     gbug = unpack(quads)
-    quads = g('1-2',1, 1,1, 1,2)
+    quads = g('9-10',5, 9,5, 9,6)
   end
   self.anim = anim8.newAnimation(quads, 0.1)
   self.fading = false
@@ -40,11 +39,11 @@ function Bug:fade()
 end
 
 function Bug:draw(v)
-  if v == 255 then love.graphics.setColor(255,255,255,self.alpha.v)
-  else love.graphics.setColor(255,255,255,v) end
-  if not self.golden then self.anim:draw(tbug,self.x,self.y,self.gangle,1,1,25,25)
-  else love.graphics.drawq(tbug,gbug,self.x,self.y,self.gangle,1,1,25,25) end
-  love.graphics.setColor(255,255,255,255)
+  if v == 255 then batch:setColor(255,255,255,self.alpha.v)
+  else batch:setColor(255,255,255,v) end
+  if not self.golden then self.anim:draw(self.x,self.y,self.gangle,1,1,25,25)
+  else batch:addq(gbug,self.x,self.y,self.gangle,1,1,25,25) end
+  batch:setColor(255,255,255,255)
 end
 
 return Bug

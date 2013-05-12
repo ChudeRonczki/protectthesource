@@ -10,9 +10,8 @@ local hidden
 local tid, vid
 
 function logo:load()
-  tlogo = love.graphics.newImage("gfx/logo.png")
-  local g = anim8.newGrid(280,110,tlogo:getWidth(),tlogo:getHeight())
-  local quads = g(1,'1-2')
+  local g = anim8.newGrid(280,110,t1:getWidth(),t1:getHeight())
+  local quads = g(3,'3-4')
   lglow, ltube = unpack(quads)
   hidden = true
 end
@@ -42,11 +41,11 @@ function logo:hide()
 end
 
 function logo:draw()
-  love.graphics.setColor(255,255,255,alphas.g)
-  love.graphics.drawq(tlogo,lglow,260,100)
-  love.graphics.setColor(255,255,255,alphas.t)
-  love.graphics.drawq(tlogo,ltube,260,100)
-  love.graphics.setColor(255,255,255,255)
+  batch:setColor(255,255,255,alphas.g)
+  batch:addq(lglow,260,100)
+  batch:setColor(255,255,255,alphas.t)
+  batch:addq(ltube,260,100)
+  batch:setColor(255,255,255,255)
 end
 
 return logo

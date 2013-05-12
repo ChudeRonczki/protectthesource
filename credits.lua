@@ -48,6 +48,9 @@ function credits:update(dt)
 end
 
 function credits:draw()
+  batch:unbind()
+  love.graphics.draw(batch)
+  batch:clear()
   local mx, my = love.mouse.getX(), love.mouse.getY()
   love.graphics.setColor(230,200,130,itemsc.a)
   love.graphics.setFont(fontb)
@@ -60,7 +63,7 @@ function credits:draw()
     love.graphics.setColor(230,200,130,itemsc.a)
   else love.graphics.printf("back to main menu",300,500,200,"center") end
   love.graphics.setColor(255,255,255,255)
-  love.graphics.draw(cross,mx,my,0,1,1,30,30)
+  love.graphics.drawq(t1,cross,mx,my,0,1,1,30,30)
 end
 
 return credits

@@ -31,6 +31,9 @@ function final:keypressed(key)
 end
 
 function final:draw()
+  batch:unbind()
+  love.graphics.draw(batch)
+  batch:clear()
   local mx, my = love.mouse.getX(), love.mouse.getY()
   love.graphics.setColor(230,200,130,itemsc.a)
   love.graphics.setFont(fontb)
@@ -38,7 +41,7 @@ function final:draw()
   love.graphics.printf(score,300,290,200,"center")
   love.graphics.printf("press any key",250,390,300,"center")
   love.graphics.setColor(255,255,255,255)
-  love.graphics.draw(cross,mx,my,0,1,1,30,30)
+  love.graphics.drawq(t1,cross,mx,my,0,1,1,30,30)
 end
 
 return final

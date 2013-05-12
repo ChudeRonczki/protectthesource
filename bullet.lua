@@ -4,7 +4,7 @@ anim8 = require "lib/anim8"
 tween = require "lib/tween"
 
 local Bullet = Class{}
-local tbullet
+local qbullet
 
 function Bullet:init(angle)
   self.gangle = angle
@@ -12,7 +12,7 @@ function Bullet:init(angle)
   self.x,self.y = 400 + self.dx*98, 300 + self.dy*98
   self.dx,self.dy = self.dx*100,self.dy*100
   if not tbullet then
-    tbullet = love.graphics.newImage("gfx/pocisk.png")
+    qbullet = love.graphics.newQuad(0,400,70,30,1024,1024)
   end
   self.todelete = false
   self.alpha = {v = 0}
@@ -25,10 +25,10 @@ function Bullet:update(dt)
 end
 
 function Bullet:draw(v)
-  if v == 255 then love.graphics.setColor(255,255,255,self.alpha.v)
-  else love.graphics.setColor(255,255,255,v) end
-  love.graphics.draw(tbullet,self.x,self.y,self.gangle,1,1,65,15)
-  love.graphics.setColor(255,255,255,255)
+  if v == 255 then batch:setColor(255,255,255,self.alpha.v)
+  else batch:setColor(255,255,255,v) end
+  batch:addq(qbullet,self.x,self.y,self.gangle,1,1,65,15)
+  batch:setColor(255,255,255,255)
 end
 
 return Bullet

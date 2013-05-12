@@ -13,9 +13,8 @@ function Drop:init()
   self.x,self.y = 400 - self.dx*550, 300 - self.dy*550
   self.dx,self.dy = self.dx*50,self.dy*50
   if not dropb then
-    tdrop = love.graphics.newImage("gfx/kropla.png")
-    local g = anim8.newGrid(50,50,tdrop:getWidth(),tdrop:getHeight())
-    local quads = g('1-2',1)
+    local g = anim8.newGrid(50,50,t1:getWidth(),t1:getHeight())
+    local quads = g('9-10',7)
     dropb,dropg = unpack(quads)
   end
   self.fading = false
@@ -35,11 +34,11 @@ function Drop:fade()
 end
 
 function Drop:draw(v)
-  if v == 255 then love.graphics.setColor(255,255,255,self.alpha.v)
-  else love.graphics.setColor(255,255,255,v) end
-  if not self.golden then love.graphics.drawq(tdrop,dropb,self.x,self.y,self.gangle,1,1,25,25)
-  else love.graphics.drawq(tdrop,dropg,self.x,self.y,self.gangle,1,1,25,25) end
-  love.graphics.setColor(255,255,255,255)
+  if v == 255 then batch:setColor(255,255,255,self.alpha.v)
+  else batch:setColor(255,255,255,v) end
+  if not self.golden then batch:addq(dropb,self.x,self.y,self.gangle,1,1,25,25)
+  else batch:addq(dropg,self.x,self.y,self.gangle,1,1,25,25) end
+  batch:setColor(255,255,255,255)
 end
 
 return Drop

@@ -238,7 +238,7 @@ function Animation:resume()
   self.status = "playing"
 end
 
-function Animation:draw(image, x, y, r, sx, sy, ox, oy, ...)
+function Animation:draw(x, y, r, sx, sy, ox, oy, ...)
   local frame = self.frames[self.position]
   if self.flippedH or self.flippedV then
     r,sx,sy,ox,oy = r or 0, sx or 1, sy or 1, ox or 0, oy or 0
@@ -253,7 +253,7 @@ function Animation:draw(image, x, y, r, sx, sy, ox, oy, ...)
       oy = h - oy
     end
   end
-  love.graphics.drawq(image, frame, x, y, r, sx, sy, ox, oy, ...)
+  batch:addq(frame, x, y, r, sx, sy, ox, oy, ...)
 end
 
 -----------------------------------------------------------
